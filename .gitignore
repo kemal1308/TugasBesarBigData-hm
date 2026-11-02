@@ -1,8 +1,6 @@
-data/*
-!data/.gitkeep
-
-models/*
-!models/.gitkeep
-
-*.parquet
+data/* 
+!data/.gitkeep 
+models/* 
+!models/.gitkeep 
+*.parquet 
 *.csv
