@@ -1,4 +1,3 @@
-# Abaikan isi data dan model, kecuali file .gitkeep
 data/*
 !data/.gitkeep
 
