@@ -1,3 +1,5 @@
+import os
+
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 from pyspark.ml import Pipeline, PipelineModel
@@ -41,6 +43,7 @@ def fit_and_transform_indexers(df: DataFrame, model_save_path: str = None) -> tu
         .withColumn("purchase_count", F.col("purchase_count").cast("float"))
 
     if model_save_path:
+        os.makedirs(os.path.dirname(model_save_path), exist_ok=True)
         indexer_model.write().overwrite().save(model_save_path)
 
     return final_df, indexer_model
