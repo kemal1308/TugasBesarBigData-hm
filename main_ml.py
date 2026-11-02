@@ -1,3 +1,4 @@
+import os
 from pyspark.sql import SparkSession
 from src.config import DATA_INPUT_PARQUET, MODEL_INDEXER_DIR, MODEL_ALS_DIR, ALS_PARAMS
 from src.preprocessing import create_implicit_ratings, fit_and_transform_indexers
@@ -5,20 +6,40 @@ from src.model import train_als_model, evaluate_model, get_top_recommendations
 
 
 def init_spark() -> SparkSession:
-    return SparkSession.builder \
+    # 1. Konfigurasi driver & executor
+    spark = SparkSession.builder \
         .appName("HM_Recommendation_Pipeline") \
-        .config("spark.driver.memory", "8g") \
-        .config("spark.executor.memory", "8g") \
+        .config("spark.driver.memory", "4g") \
+        .config("spark.executor.memory", "4g") \
         .config("spark.sql.shuffle.partitions", "200") \
+        .config("spark.hadoop.fs.file.impl", "org.apache.hadoop.fs.LocalFileSystem") \
         .getOrCreate()
+
+    # 2. BYPASS Windows NativeIO Bug
+    # Memaksa Hadoop Java menggunakan Java I/O standar alih-alih Native Windows I/O
+    try:
+        jvm = spark._jvm
+        # Matikan pengecekan NativeIO Windows
+        jvm.org.apache.hadoop.io.nativeio.NativeIO.Windows.setCustomNativeInterface(None)
+    except Exception:
+        pass
+
+    return spark
 
 
 def main():
     spark = init_spark()
     spark.sparkContext.setLogLevel("WARN")
 
+    # Bypass alternatif jika setCustomNativeInterface tidak tersedia di versi Spark Anda
+    try:
+        spark._jvm.java.lang.System.setProperty("hadoop.home.dir", "/")
+    except Exception:
+        pass
+
     print("[1/5] Memuat dataset bersih...")
     df_cleaned = spark.read.parquet(DATA_INPUT_PARQUET)
+    print(f"Data berhasil dimuat! Total baris: {df_cleaned.count()}")
 
     print("[2/5] Membangun implicit rating & indexing...")
     interactions = create_implicit_ratings(df_cleaned)
