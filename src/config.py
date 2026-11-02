@@ -1,16 +1,17 @@
 import os
 
-# Base directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Data Paths
-DATA_INPUT_PARQUET = os.path.join(BASE_DIR, "data", "cleaned_hm_data.parquet")
+# Sesuaikan nama folder/file sesuai yang ada di laptop Anda saat ini:
+# Contoh jika file berada di folder data dengan nama cleaned_data.parquet:
+DATA_INPUT_PARQUET = os.path.join(BASE_DIR, "data", "cleaned_data.parquet")
 
-# Model Paths
+# ATAU jika berada di folder notebooks:
+# DATA_INPUT_PARQUET = os.path.join(BASE_DIR, "notebooks", "cleaned_data.parquet")
+
 MODEL_INDEXER_DIR = os.path.join(BASE_DIR, "models", "string_indexer_pipeline")
 MODEL_ALS_DIR = os.path.join(BASE_DIR, "models", "als_recommender_model")
 
-# ALS Hyperparameters
 ALS_PARAMS = {
     "maxIter": 10,
     "regParam": 0.1,
