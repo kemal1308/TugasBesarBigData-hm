@@ -1,4 +1,9 @@
-data/
+# Abaikan isi data dan model, kecuali file .gitkeep
+data/*
+!data/.gitkeep
+
+models/*
+!models/.gitkeep
+
 *.parquet
 *.csv
-models/
