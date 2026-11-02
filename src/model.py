@@ -11,6 +11,7 @@ def train_als_model(train_df: DataFrame, params: dict, save_path: str = None) ->
     als_model = als.fit(train_df)
 
     if save_path:
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
         als_model.write().overwrite().save(save_path)
 
     return als_model
