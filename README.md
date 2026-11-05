@@ -1,26 +1,73 @@
-# H&M Personalized Fashion Recommendation System using PySpark MLlib
+# 🛍️ H&M Personalized Fashion Recommendation System using PySpark MLlib
 
-Repositori ini berisi implementasi sistem rekomendasi produk mode (*fashion recommendation*) terpersonalisasi untuk data transaksi H&M menggunakan **Apache Spark (PySpark MLlib)** dengan algoritma **Collaborative Filtering - Alternating Least Squares (ALS)** berbasis *implicit feedback*.
+![PySpark](https://img.shields.io/badge/PySpark-MLlib-E25A1C?logo=apachespark&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)
+![Google Colab](https://img.shields.io/badge/Google%20Colab-Ready-F9AB00?logo=googlecolab&logoColor=white)
+![Algorithm](https://img.shields.io/badge/Algorithm-ALS-blueviolet)
+
+Repositori ini berisi implementasi **sistem rekomendasi produk mode (fashion recommendation) terpersonalisasi** untuk data transaksi H&M menggunakan **Apache Spark (PySpark MLlib)** dengan algoritma **Collaborative Filtering – Alternating Least Squares (ALS)** berbasis *implicit feedback*.
+
+---
+
+## 📑 Daftar Isi
+
+- [Gambaran Proyek](#-gambaran-proyek)
+- [Alur Kerja & Pembagian Tugas](#-alur-kerja--pembagian-tugas)
+- [Tautan Eksekusi Cepat](#-tautan-eksekusi-cepat)
+- [Struktur Direktori](#-struktur-direktori)
+- [Data & Model Checkpoints](#-data--model-checkpoints)
+- [Hasil Evaluasi Model Baseline](#-hasil-evaluasi-model-baseline)
+- [Panduan Instalasi & Eksekusi Lokal](#%EF%B8%8F-panduan-instalasi--eksekusi-lokal)
 
 ---
 
 ## 📌 Gambaran Proyek
 
-Proyek ini bertujuan mengolah data transaksi berskala besar (~31,7 juta baris transaksi) untuk memprediksi preferensi pembelian pelanggan dan menghasilkan Top-N rekomendasi produk pakaian yang relevan.
+Proyek ini bertujuan mengolah data transaksi berskala besar (**~31,7 juta baris**) untuk memprediksi preferensi pembelian pelanggan dan menghasilkan **Top-N rekomendasi** produk pakaian yang relevan.
 
-* **Metode:** Collaborative Filtering (Matrix Factorization) menggunakan PySpark MLlib ALS.
-* **Target Rating:** *Implicit Feedback* berdasarkan frekuensi pembelian produk (`purchase_count`).
-* **Lingkungan Komputasi:** Google Colab (RAM ~12 GB Cloud Runtime) terintegrasi dengan Google Drive dan GitHub.
+| Aspek | Keterangan |
+|---|---|
+| **Metode** | Collaborative Filtering (Matrix Factorization) menggunakan PySpark MLlib ALS |
+| **Target Rating** | Implicit feedback berdasarkan frekuensi pembelian produk (`purchase_count`) |
+| **Lingkungan Komputasi** | Google Colab (RAM ~12 GB, Cloud Runtime) terintegrasi dengan Google Drive dan GitHub |
+
+---
+
+## 👥 Alur Kerja & Pembagian Tugas
+
+Proyek ini dikerjakan secara kolaboratif dengan pembagian peran sebagai berikut:
+
+### 01: Persiapan Data Skala Besar
+
+- Menangani dataset mentah dari file CSV yang berisi ~31,7 juta baris transaksi.
+- Membersihkan data dari nilai *null* dan menggabungkan (*join*) tabel transaksi dengan metadata produk (tabel `articles`).
+- Mengekspor seluruh 31,7 juta baris data gabungan yang sudah bersih ke format terkompresi `cleaned_data.parquet` agar pembacaan oleh PySpark jauh lebih cepat dan efisien.
+
+📓 **Dokumentasi:** `notebooks/01_data_cleaning_eda.ipynb`
+
+### 02: Pemodelan & Preprocessing Lanjutan
+
+- **Filtering & penanganan memori:** Membaca file `.parquet` (31,7 juta baris), lalu menyaring data berdasarkan waktu (`t_dat >= 2020-08-01`) di awal pipeline untuk mencegah Google Colab mengalami *Out of Memory* (OOM). Data menyusut menjadi **2.035.461 baris aktif**.
+- **Transformasi fitur:** Mengonversi ID pelanggan dan artikel (string) menjadi angka indeks menggunakan `StringIndexer`.
+- **Pemodelan:** Membangun fitur implicit feedback berdasarkan frekuensi pembelian, lalu melatih dan menguji algoritma ALS dengan metrik RMSE.
+
+📓 **Dokumentasi:** `notebooks/02_run_ml_pipeline.ipynb`, `src/preprocessing.py`, `src/model.py`
+
+### 03: Tuning & Laporan
+
+- Melakukan *hyperparameter tuning* (kombinasi `rank`, `maxIter`, `regParam`) untuk mendapatkan performa model terbaik.
+- Menyusun laporan komprehensif dan visualisasi hasil rekomendasi.
 
 ---
 
 ## 🚀 Tautan Eksekusi Cepat
 
-Jalankan eksperimen interaktif *end-to-end* langsung melalui Google Colab:
+Jalankan eksperimen interaktif end-to-end langsung melalui Google Colab:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15zm9vMmF2hRMCZDrS9ibv7SqMBLGJ7Mq?usp=sharing)
+<!-- GANTI LINK_COLAB_ANDA dengan URL notebook Colab kamu -->
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](LINK_COLAB_ANDA)
 
-Notebook statis versi repositori tersedia pada direktori [`notebooks/02_run_ml_pipeline.ipynb`](notebooks/02_run_ml_pipeline.ipynb).
+> Notebook statis versi repositori tersedia pada direktori [`notebooks/02_run_ml_pipeline.ipynb`](notebooks/02_run_ml_pipeline.ipynb).
 
 ---
 
@@ -47,15 +94,15 @@ Notebook statis versi repositori tersedia pada direktori [`notebooks/02_run_ml_p
 
 ## 💾 Data & Model Checkpoints
 
-Karena batasan ukuran file di GitHub (< 100 MB), dataset utama (`.parquet`) dan artefak biner model PySpark (`models/`) disimpan secara eksternal:
+Karena batasan ukuran file di GitHub (< 100 MB), dataset utama (`.parquet`) dan artefak biner model PySpark (`models/`) disimpan secara eksternal.
 
-* **Penyimpanan Cloud (Google Drive):** [Akses Folder Data & Model di Google Drive](https://drive.google.com/drive/folders/1MOEoXRvFr4jEGYtro00kPjD9-6ph_zdS?usp=drive_link)
-* **Dataset:** Unduh dan simpan folder hasil unduhan ke dalam direktori `data/cleaned_data.parquet`.
-* **Model Artefak:** Hasil serialisasi model tersimpan dalam direktori:
-  * `models/string_indexer_pipeline` (Pipeline transformasi indeks user dan item)
-  * `models/als_recommender_model` (Bobot matriks faktor laten ALS)
+- **☁️ Penyimpanan Cloud (Google Drive):** [Akses Folder Data & Model di Google Drive](LINK_GOOGLE_DRIVE_ANDA)
+- **📦 Dataset:** Unduh dan simpan hasil unduhan ke direktori `data/cleaned_data.parquet`.
+- **🧠 Model Artefak:** Hasil serialisasi model tersimpan di direktori:
+  - `models/string_indexer_pipeline` — pipeline transformasi indeks user dan item
+  - `models/als_recommender_model` — bobot matriks faktor laten ALS
 
-> **Catatan:** Direktori `data/` dan `models/` di repositori GitHub ini hanya berisi file `.gitkeep` sebagai *placeholder* struktur direktori dan secara otomatis diabaikan oleh `.gitignore`.
+> **Catatan:** Direktori `data/` dan `models/` di repositori ini hanya berisi file `.gitkeep` sebagai placeholder struktur direktori dan otomatis diabaikan oleh `.gitignore`.
 
 ---
 
@@ -64,36 +111,41 @@ Karena batasan ukuran file di GitHub (< 100 MB), dataset utama (`.parquet`) dan 
 Eksperimen baseline melatih data transaksi pada periode 2 bulan terakhir (`t_dat >= 2020-08-01`) guna memastikan efisiensi memori komputasi serta relevansi tren mode terkini.
 
 | Metrik / Parameter | Nilai / Konfigurasi |
-| :--- | :--- |
-| **Total Baris Data Aktif** | 2.035.461 baris |
-| **Data Latih (Train Split 80%)** | 1.434.653 baris |
-| **Data Uji (Test Split 20%)** | 358.961 baris |
-| **Evaluasi Test RMSE** | **`1.0794`** |
-| **Latent Factors (`rank`)** | 20 |
-| **Max Iterations (`maxIter`)** | 10 |
-| **Regularization (`regParam`)** | 0.1 |
-| **Confidence Multiplier (`alpha`)** | 40.0 |
-| **Feedback Type** | Implicit (`implicitPrefs=True`) |
-| **Cold Start Strategy** | Drop (`coldStartStrategy='drop'`) |
+|---|---|
+| Total Baris Data Aktif | 2.035.461 baris |
+| Data Latih (Train Split 80%) | 1.434.653 baris |
+| Data Uji (Test Split 20%) | 358.961 baris |
+| **Evaluasi Test RMSE** | **1.0794** |
+| Latent Factors (`rank`) | 20 |
+| Max Iterations (`maxIter`) | 10 |
+| Regularization (`regParam`) | 0.1 |
+| Confidence Multiplier (`alpha`) | 40.0 |
+| Feedback Type | Implicit (`implicitPrefs=True`) |
+| Cold Start Strategy | Drop (`coldStartStrategy='drop'`) |
 
 ---
 
 ## 🛠️ Panduan Instalasi & Eksekusi Lokal
 
 ### 1. Clone Repositori
+
 ```bash
 git clone https://github.com/kemal1308/TugasBesarBigData-hm.git
 cd TugasBesarBigData-hm
 ```
 
 ### 2. Pasang Dependensi
-Pastikan telah terpasang Java 8/11 dan Python 3.9+:
+
+Pastikan **Java 8/11** dan **Python 3.9+** sudah terpasang, lalu jalankan:
+
 ```bash
 pip install pyspark pandas matplotlib seaborn
 ```
 
 ### 3. Jalankan Pipeline
+
 Letakkan file `cleaned_data.parquet` pada folder `data/`, lalu jalankan:
+
 ```bash
 python main_ml.py
 ```
