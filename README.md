@@ -101,8 +101,10 @@ Karena batasan ukuran file di GitHub (< 100 MB), dataset utama (`.parquet`) dan 
 - **🧠 Model Artefak:** Hasil serialisasi model tersimpan di direktori:
   - `models/string_indexer_pipeline` — pipeline transformasi indeks user dan item
   - `models/als_recommender_model` — bobot matriks faktor laten ALS
+  - - `models/best_als_model` — model ALS hasil tuning (rank=20, maxIter=10, regParam=0.05)
 
 > **Catatan:** Direktori `data/` dan `models/` di repositori ini hanya berisi file `.gitkeep` sebagai placeholder struktur direktori dan otomatis diabaikan oleh `.gitignore`.
+> Catatan: RMSE baseline 1.0794 juga direproduksi pada notebook 03 dengan `seed=42`.
 
 ---
 
