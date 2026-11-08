@@ -55,19 +55,12 @@ Proyek ini dikerjakan secara kolaboratif dengan pembagian peran sebagai berikut:
 
 ### 03: Tuning & Laporan
 
-- Melakukan *hyperparameter tuning* (kombinasi `rank`, `maxIter`, `regParam`) untuk mendapatkan performa model terbaik.
-- Menyusun laporan komprehensif dan visualisasi hasil rekomendasi.
-
----
-
-## 🚀 Tautan Eksekusi Cepat
-
-Jalankan eksperimen interaktif end-to-end langsung melalui Google Colab:
-
-<!-- GANTI LINK_COLAB_ANDA dengan URL notebook Colab kamu -->
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](LINK_COLAB_ANDA)
-
-> Notebook statis versi repositori tersedia pada direktori [`notebooks/02_run_ml_pipeline.ipynb`](notebooks/02_run_ml_pipeline.ipynb).
+### 03: Tuning, Evaluasi & Visualisasi
+- Hyperparameter tuning dengan `ParamGridBuilder` + `TrainValidationSplit` (trainRatio 0.8) pada subset 20% data latih, 4 kombinasi (rank [10, 20] x regParam [0.05, 0.1], maxIter 10).
+- Melatih ulang baseline dan model hasil tuning pada seluruh data latih dengan `seed=42` agar perbandingan adil.
+- Evaluasi dengan RMSE dan metrik ranking @10 (Precision, Recall, MAP, NDCG), dibandingkan dengan baseline popularity.
+- Visualisasi 4 grafik: hasil grid tuning, RMSE sebelum vs sesudah, metrik ranking, dan contoh Top-10 rekomendasi.
+📓 Dokumentasi: `notebooks/03_model_tuning_and_evaluation.ipynb`
 
 ---
 
@@ -81,6 +74,7 @@ Jalankan eksperimen interaktif end-to-end langsung melalui Google Colab:
 ├── notebooks/                  # Jupyter / Colab Notebooks untuk eksperimen & evaluasi
 │   ├── 01_data_cleaning_eda.ipynb
 │   └── 02_run_ml_pipeline.ipynb
+│   └── 03_model_tuning_and_evaluation.ipynb  
 ├── src/                        # Modul Python utama (modular pipeline)
 │   ├── config.py               # Parameter konfigurasi Spark & ALS
 │   ├── model.py                # Fungsi pelatihan, evaluasi (RMSE), dan inferensi
@@ -171,3 +165,12 @@ Letakkan file `cleaned_data.parquet` pada folder `data/`, lalu jalankan:
 ```bash
 python main_ml.py
 ```
+
+## 🚀 Tautan Eksekusi Cepat
+
+Jalankan eksperimen interaktif end-to-end langsung melalui Google Colab:
+
+<!-- GANTI LINK_COLAB_ANDA dengan URL notebook Colab kamu -->
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](LINK_COLAB_ANDA)
+
+> Notebook statis versi repositori tersedia pada direktori [`notebooks/02_run_ml_pipeline.ipynb`](notebooks/02_run_ml_pipeline.ipynb).
