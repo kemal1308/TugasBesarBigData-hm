@@ -110,18 +110,38 @@ Karena batasan ukuran file di GitHub (< 100 MB), dataset utama (`.parquet`) dan 
 
 Eksperimen baseline melatih data transaksi pada periode 2 bulan terakhir (`t_dat >= 2020-08-01`) guna memastikan efisiensi memori komputasi serta relevansi tren mode terkini.
 
-| Metrik / Parameter | Nilai / Konfigurasi |
-|---|---|
-| Total Baris Data Aktif | 2.035.461 baris |
-| Data Latih (Train Split 80%) | 1.434.653 baris |
-| Data Uji (Test Split 20%) | 358.961 baris |
-| **Evaluasi Test RMSE** | **1.0794** |
-| Latent Factors (`rank`) | 20 |
-| Max Iterations (`maxIter`) | 10 |
-| Regularization (`regParam`) | 0.1 |
-| Confidence Multiplier (`alpha`) | 40.0 |
-| Feedback Type | Implicit (`implicitPrefs=True`) |
-| Cold Start Strategy | Drop (`coldStartStrategy='drop'`) |
+## 🎛️ Hasil Hyperparameter Tuning & Evaluasi
+
+### Hasil Grid Search (RMSE validasi, subset 20% data latih)
+
+| rank | maxIter | regParam | RMSE Validasi |
+|---|---|---|---|
+| 20 | 10 | 0.05 | **1.21843** (terbaik) |
+| 20 | 10 | 0.10 | 1.21856 (konfigurasi baseline) |
+| 10 | 10 | 0.05 | 1.21926 |
+| 10 | 10 | 0.10 | 1.21936 |
+
+**Parameter terbaik:** rank = 20, maxIter = 10, regParam = 0.05
+
+### Baseline vs Tuned (seed = 42)
+
+| Metrik | Popularity | ALS Baseline | ALS Tuned |
+|---|---|---|---|
+| RMSE Test | - | 1.0794 | 1.0788 |
+| Precision@10 | 0.00236 | 0.01314 | 0.01314 |
+| Recall@10 | 0.01420 | 0.08163 | 0.08157 |
+| MAP@10 | 0.00483 | 0.03084 | 0.03073 |
+| NDCG@10 | 0.00791 | 0.04737 | 0.04725 |
+
+Metrik ranking dihitung pada 9.827 pelanggan sampel dari data uji.
+
+### Kesimpulan
+- ALS mengungguli rekomendasi berbasis popularitas pada semua metrik ranking (sekitar 5-6 kali lipat).
+- Selisih baseline vs tuned sangat kecil (RMSE 1.0794 → 1.0788), artinya konfigurasi baseline sudah mendekati optimal pada ruang pencarian yang diuji (4 kombinasi, subset 20% data).
+- RMSE kurang ideal untuk implicit feedback, sehingga kualitas model juga dinilai dengan metrik ranking.
+- Nilai absolut metrik ranking kecil karena katalog sangat besar dan matriks interaksi sangat renggang.
+
+📊 Grafik hasil tuning dan evaluasi dapat dilihat pada `notebooks/03_model_tuning_and_evaluation.ipynb`.
 
 ---
 
